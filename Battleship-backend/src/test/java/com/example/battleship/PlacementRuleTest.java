@@ -1,5 +1,9 @@
 package com.example.battleship;
 
+import com.example.battleship.domain.*;
+import com.example.battleship.dto.PlaceShipRequest;
+import com.example.battleship.service.GameService;
+import com.example.battleship.service.GameStore;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
