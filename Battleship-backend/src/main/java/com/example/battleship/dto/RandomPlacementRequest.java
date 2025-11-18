@@ -1,4 +1,8 @@
 package com.example.battleship.dto;
 
-public record RandomPlacementRequest() {
+import com.example.battleship.domain.Player;
+import jakarta.validation.constraints.NotNull;
+
+public record RandomPlacementRequest(@NotNull Player player) {
+
 }

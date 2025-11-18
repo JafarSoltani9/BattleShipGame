@@ -1,4 +1,4 @@
 package com.example.battleship.domain;
 
-public record Coord() {
+public record Coord(int row, int col) {
 }

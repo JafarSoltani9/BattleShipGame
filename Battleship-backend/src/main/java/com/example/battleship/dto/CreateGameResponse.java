@@ -1,4 +1,4 @@
 package com.example.battleship.dto;
 
-public record CreateGameResponse() {
+public record CreateGameResponse(String gameId) {
 }
