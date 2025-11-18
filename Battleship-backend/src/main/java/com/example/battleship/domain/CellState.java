@@ -1,5 +1,5 @@
 package com.example.battleship.domain;
 
-public enum CellStatus {
+public enum CellState {
     EMPTY, SHIP, HIT, MISS, SUNK
 }
