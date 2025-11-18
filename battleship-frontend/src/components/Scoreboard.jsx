@@ -1,35 +1,34 @@
 import React from "react";
-export function HandoffOverlay({ visible, nextPlayerName, onContinue }) {
-  if (!visible) return null;
+
+export default function Scoreboard({
+  title,
+  sunkShips = [],
+  hits = 0,
+  misses = 0,
+}) {
+
+
   return (
-    <div
-      className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-      style={{ backgroundColor: "rgba(0,0,0,0.7)", zIndex: 1050 }}
-    >
-      {" "}
-      <div
-        className="card bg-dark text-light"
-        style={{ maxWidth: "400px", width: "100%" }}
-      >
-        {" "}
-        <div className="card-body text-center">
-          {" "}
-          <h5 className="card-title mb-3">Next Player</h5>{" "}
-          <p className="card-text">
-            {" "}
-            Pass the device to <strong>{nextPlayerName}</strong>.{" "}
-          </p>{" "}
-          <button
-            type="button"
-            className="btn btn-primary mt-2"
-            onClick={onContinue}
-          >
-            {" "}
-            I am ready{" "}
-          </button>{" "}
-        </div>{" "}
-      </div>{" "}
+    <div className="mt-3 p-2 border rounded bg-dark text-light">
+      <div className="fw-semibold mb-2">{title}</div>
+      <div className="small">
+        <div>
+          Hits: <strong>{hits}</strong>
+        </div>
+        <div>
+          Misses: <strong>{misses}</strong>
+        </div>
+        <div className="mt-2">Sunk ships:</div>
+        {sunkShips.length ? (
+          <ul className="mb-0">
+            {sunkShips.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ul>
+        ) : (
+          <div className="text-muted">— none yet —</div>
+        )}
+      </div>
     </div>
   );
 }
-export default HandoffOverlay;
