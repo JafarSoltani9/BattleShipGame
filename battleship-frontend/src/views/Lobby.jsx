@@ -14,7 +14,7 @@ export default function Lobby({ onGameCreated }) {
     const p1 = p1Name.trim();
     const p2 = p2Name.trim();
 
-    // 👇 FRONTEND validation
+    //  frontend validation
     if (!p1 || !p2) {
       setError("Both player names are required.");
       return;
@@ -25,7 +25,7 @@ export default function Lobby({ onGameCreated }) {
       const id = await createGame(p1, p2);
       onGameCreated(id);
     } catch (err) {
-      // In case backend also rejects (extra safety)
+      // In case backend also rejects
       setError(err.message || "Failed to create game");
     } finally {
       setLoading(false);
@@ -48,7 +48,7 @@ export default function Lobby({ onGameCreated }) {
                 value={p1Name}
                 onChange={(e) => setP1Name(e.target.value)}
                 placeholder="Enter a name"
-                required                    // 👈 optional: native HTML check
+                required                    
               />
             </div>
             <div className="mb-3">
@@ -61,7 +61,7 @@ export default function Lobby({ onGameCreated }) {
                 value={p2Name}
                 onChange={(e) => setP2Name(e.target.value)}
                 placeholder="Enter a name"
-                required                    // 👈 optional: native HTML check
+                required                   
               />
             </div>
             {error && <div className="alert alert-danger py-1 small">{error}</div>}

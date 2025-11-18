@@ -78,7 +78,7 @@ export function Board({
                     aria-label={`cell-${r}-${c}`}
                     title={`${COL_LABELS[c]}${r + 1}`}
                   >
-                    {/* Symbols only on opponent grid */}
+                    
                     {!showShips &&
                       (cell === CELL_STATES.HIT || cell === CELL_STATES.SUNK) &&
                       "✓"}

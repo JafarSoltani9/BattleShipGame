@@ -4,7 +4,7 @@ import { VIEWERS } from "./gameConstants";
 const API_ROOT = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 async function handleJson(res) {
-  const text = await res.text(); // read body ONCE
+  const text = await res.text(); // read body once
 
   if (!res.ok) {
     throw new Error(text || `HTTP ${res.status}`);
@@ -28,13 +28,14 @@ export async function createGame(p1Name, p2Name) {
     method: "POST",
   });
 
-  const data = await handleJson(res); // expect CreateGameResponse
+   // expect CreateGameResponse
+  const data = await handleJson(res);
 
   if (!data) {
     throw new Error("Empty response from createGame");
   }
 
-  // Try to be flexible in case your DTO field
+  
   return data.id ?? data.gameId ?? data.gameID;
 }
 
@@ -61,16 +62,16 @@ export async function randomPlacement(gameId, player) {
 
   if (!res.ok) {
     if (res.status === 400) {
-      // Custom, user-friendly error
+      
       throw new Error("You have already placed all ships for this player.");
     }
     const text = await res.text();
     throw new Error(text || `HTTP ${res.status}`);
   }
-  // success → no body to parse
+  
 }
 
-// random-place BOTH players,
+// random-place 2 players,
 export async function quickStart(gameId) {
   await randomPlacement(gameId, "P1");
   await randomPlacement(gameId, "P2");

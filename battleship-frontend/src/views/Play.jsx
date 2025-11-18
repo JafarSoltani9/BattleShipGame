@@ -7,7 +7,7 @@ import { useGameCtx } from "../context/GameContext";
 import { GAME_STATES, CELL_STATES } from "../gameConstants";
 
 export default function Play({ view, refresh }) {
-  // ⬇️ pull setGameId (+ setViewer) so we can go back to the start page
+  // 
   const { gameId, setGameId, setViewer } = useGameCtx();
   const [busy, setBusy] = useState(false);
 
@@ -71,7 +71,7 @@ export default function Play({ view, refresh }) {
     try {
       const result = await fire(gameId, { player, row, col });
 
-      // record sunk ship by shooter (no popups)
+      // record sunk ship by shooter
       if (result?.sunk && result?.sunkShipType) {
         if (player === "P1") setSunkByP1(prev => [...prev, result.sunkShipType]);
         else setSunkByP2(prev => [...prev, result.sunkShipType]);
@@ -92,10 +92,10 @@ export default function Play({ view, refresh }) {
     }
   }
 
-  // ⬇️ Go back to Lobby (start page)
+  // Go back to Lobby 
   function goToStart() {
-    setViewer("P1");   // optional reset
-    setGameId(null);   // App renders <Lobby />
+    setViewer("P1");   
+    setGameId(null);   
   }
 
   return (
@@ -114,7 +114,7 @@ export default function Play({ view, refresh }) {
 
       {inTurn ? (
         <div className="row g-4 justify-content-center">
-          {/* Left: P1's shots on P2 */}
+          
           <div className="col-md-5">
             <Board
               title={`${p1View?.p2Name || "Opponent"} (for ${p1View?.p1Name || "P1"})`}
@@ -132,7 +132,7 @@ export default function Play({ view, refresh }) {
             />
           </div>
 
-          {/* Right: P2's shots on P1 */}
+          
           <div className="col-md-5">
             <Board
               title={`${p2View?.p1Name || "Opponent"} (for ${p2View?.p2Name || "P2"})`}
@@ -154,7 +154,7 @@ export default function Play({ view, refresh }) {
         <div className="text-center text-muted">Placement phase…</div>
       )}
 
-      {/* Back to Start button under the grids */}
+      
       <div className="text-center my-4">
         <button
           type="button"
