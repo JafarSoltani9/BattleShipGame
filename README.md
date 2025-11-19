@@ -56,3 +56,28 @@ Each player secretly places a fleet of ships on their own 10×10 grid. The goal 
 ------------------------------
 
 ## How to Run the Game
+
+You run the project by starting the backend (API) and the frontend (UI).
+
+### 1. Clone the repository
+  ```bash
+    git clone https://github.com/JafarSoltani9/BattleShipGame.git
+    cd BattleShipGame
+  ```
+
+### 2. Start Backend
+  ```bash
+    cd Battleship-backend
+    mvn clean install
+    mvn spring-boot:run
+    The backend runs at: http://localhost:8080
+  ```
+
+### 3. Start Frontend
+  ```bash
+    cd Battleship-frontend
+    npm install
+    npm run dev
+    The frontend runs at: http://localhost:5173
+  ```
+
