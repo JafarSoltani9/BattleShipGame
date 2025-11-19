@@ -1,4 +1,5 @@
 # BattleShipGame
 
-📖 About The Game
-Battleship is a strategic two-player guessing game where each player secretly places their fleet of ships on a 10×10 grid and takes turns firing shots to sink their opponent's fleet. The first player to destroy all enemy ships wins!
+## About The Game
+Battleship is a turn-based strategy game for two players.  
+Each player secretly places a fleet of ships on their own 10×10 grid. The goal is to be the first to sink all of the opponent’s ships.
