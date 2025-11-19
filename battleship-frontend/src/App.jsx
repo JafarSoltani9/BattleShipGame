@@ -13,10 +13,7 @@ function Shell() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const state = view?.state;
-  const isPlacement =
-    state === GAME_STATES.PLACING_P1 || state === GAME_STATES.PLACING_P2;
-
+  // Fetch current view for the selected viewer
   useEffect(() => {
     let alive = true;
 
@@ -39,6 +36,20 @@ function Shell() {
     };
   }, [gameId, viewer]);
 
+  // 👇 NEW: automatically choose viewer based on game state in placement
+  useEffect(() => {
+    if (!view) return;
+
+    if (view.state === GAME_STATES.PLACING_P1 && viewer !== VIEWERS.P1) {
+      setViewer(VIEWERS.P1);
+    } else if (
+      view.state === GAME_STATES.PLACING_P2 &&
+      viewer !== VIEWERS.P2
+    ) {
+      setViewer(VIEWERS.P2);
+    }
+  }, [view?.state, viewer, setViewer]);
+
   const fetchNow = async () => {
     if (!gameId) return;
     setLoading(true);
@@ -59,6 +70,7 @@ function Shell() {
   }
 
   let mainContent = null;
+  const state = view?.state;
 
   if (!gameId) {
     mainContent = (
@@ -74,7 +86,10 @@ function Shell() {
         <span>Loading game…</span>
       </div>
     );
-  } else if (state === GAME_STATES.PLACING_P1 || state === GAME_STATES.PLACING_P2) {
+  } else if (
+    state === GAME_STATES.PLACING_P1 ||
+    state === GAME_STATES.PLACING_P2
+  ) {
     mainContent = <Placement view={view} refresh={fetchNow} />;
   } else if (state === GAME_STATES.TURN_P1 || state === GAME_STATES.TURN_P2) {
     mainContent = <Play view={view} refresh={fetchNow} />;
@@ -91,33 +106,7 @@ function Shell() {
           <span className="small">
             Game ID:&nbsp;<code className="text-danger">{gameId ?? "—"}</code>
           </span>
-
-          {/* 👇 Only show viewer switch during placement phase */}
-          {view && isPlacement && (
-            <div className="d-flex align-items-center gap-3 flex-wrap">
-              <span className="small mb-0">
-                Viewing as:&nbsp;
-                <strong>
-                  {viewer === VIEWERS.P1
-                    ? view?.p1Name || "Player 1"
-                    : view?.p2Name || "Player 2"}
-                </strong>
-              </span>
-
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-light"
-                onClick={() =>
-                  setViewer(viewer === VIEWERS.P1 ? VIEWERS.P2 : VIEWERS.P1)
-                }
-              >
-                Switch to{" "}
-                {viewer === VIEWERS.P1
-                  ? view?.p2Name || "Player 2"
-                  : view?.p1Name || "Player 1"}
-              </button>
-            </div>
-          )}
+          {/* No manual switch button needed anymore */}
         </div>
       </header>
 
