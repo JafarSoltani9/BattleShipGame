@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { GameProvider, useGameCtx } from "./context/GameContext";
 import Lobby from "./views/Lobby";
@@ -13,17 +12,12 @@ function Shell() {
   const [view, setView] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const isPlacement =
-  view?.state === GAME_STATES.PLACING_P1 ||
-  view?.state === GAME_STATES.PLACING_P2;
 
-  
   useEffect(() => {
     let alive = true;
 
     (async () => {
       if (!gameId) {
-        
         return;
       }
       setLoading(true);
@@ -42,7 +36,6 @@ function Shell() {
       alive = false;
     };
   }, [gameId, viewer]);
-
 
   const fetchNow = async () => {
     if (!gameId) return;
@@ -70,7 +63,7 @@ function Shell() {
     mainContent = (
       <Lobby
         onGameCreated={(id) => {
-          setGameId(id); 
+          setGameId(id);
         }}
       />
     );
@@ -84,9 +77,9 @@ function Shell() {
     state === GAME_STATES.PLACING_P1 ||
     state === GAME_STATES.PLACING_P2
   ) {
-    mainContent = <Placement view={view} refresh={fetchNow} />; // pass fetchNow
+    mainContent = <Placement view={view} refresh={fetchNow} />;
   } else if (state === GAME_STATES.TURN_P1 || state === GAME_STATES.TURN_P2) {
-    mainContent = <Play view={view} refresh={fetchNow} />; // pass fetchNow
+    mainContent = <Play view={view} refresh={fetchNow} />;
   } else if (state === GAME_STATES.FINISHED) {
     mainContent = <GameOver view={view} onPlayAgain={handlePlayAgain} />;
   }
@@ -94,30 +87,40 @@ function Shell() {
   return (
     <div className="bg-slate-grey text-light min-vh-100 d-flex flex-column">
       <header className="border-bottom border-secondary py-2 px-3">
-  <div className="fw-semibold text-center fs-4">Battleship</div>
+        <div className="fw-semibold text-center fs-4">Battleship</div>
 
-  <div className="d-flex justify-content-center align-items-center gap-3 flex-wrap mt-2">
-    <span className="small">
-      Game ID:&nbsp;<code className="text-danger">{gameId ?? "—"}</code>
-    </span>
+        <div className="d-flex justify-content-center align-items-center gap-3 flex-wrap mt-2">
+          <span className="small">
+            Game ID:&nbsp;<code className="text-danger">{gameId ?? "—"}</code>
+          </span>
 
-    {isPlacement && (
-      <div className="d-flex align-items-center gap-2">
-        <label htmlFor="viewer-select" className="small mb-0">View as</label>
-        <select
-          id="viewer-select"
-          className="form-select form-select-sm bg-dark text-light border-secondary"
-          value={viewer}
-          onChange={(e) => setViewer(e.target.value === "P2" ? "P2" : "P1")}
-          aria-label="View as player"
-        >
-          <option value="P1">{view?.p1Name || "Player 1"}</option>
-          <option value="P2">{view?.p2Name || "Player 2"}</option>
-        </select>
-      </div>
-    )}
-  </div>
-</header>
+          {view && (
+            <div className="d-flex align-items-center gap-3 flex-wrap">
+              <span className="small mb-0">
+                Viewing as:&nbsp;
+                <strong>
+                  {viewer === VIEWERS.P1
+                    ? view?.p1Name || "Player 1"
+                    : view?.p2Name || "Player 2"}
+                </strong>
+              </span>
+
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-light"
+                onClick={() =>
+                  setViewer(viewer === VIEWERS.P1 ? VIEWERS.P2 : VIEWERS.P1)
+                }
+              >
+                Switch to{" "}
+                {viewer === VIEWERS.P1
+                  ? view?.p2Name || "Player 2"
+                  : view?.p1Name || "Player 1"}
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
 
       <main className="flex-grow-1">
         {loading && gameId && (
@@ -133,10 +136,11 @@ function Shell() {
     </div>
   );
 }
+
 export default function App() {
   return (
     <GameProvider>
-      <Shell /> 
+      <Shell />
     </GameProvider>
   );
 }

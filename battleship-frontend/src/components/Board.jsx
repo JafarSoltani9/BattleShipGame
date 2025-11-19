@@ -8,24 +8,38 @@ function cellClass(cell, showShips, clickable, disabled) {
     "btn btn-sm p-0 border d-flex align-items-center justify-content-center";
   if (disabled) base += " disabled";
 
-  if (cell === CELL_STATES.EMPTY) return base + " btn-outline-secondary";
+  // 👇 When we are showing *our own fleet*
+  if (showShips) {
+    // Show ship cells (including hit/sunk ship cells) as filled
+    if (
+      cell === CELL_STATES.SHIP ||
+      cell === CELL_STATES.HIT ||
+      cell === CELL_STATES.SUNK
+    ) {
+      return base + " btn-secondary";
+    }
 
-  // Ships shown only on your own board
-  if (cell === CELL_STATES.SHIP) {
-    return base + (showShips ? " btn-secondary" : " btn-outline-secondary");
+    // A miss on our own board can have a different outline if you want
+    if (cell === CELL_STATES.MISS) {
+      return base + " btn-outline-danger";
+    }
+
+    // Everything else = empty water
+    return base + " btn-outline-secondary";
   }
 
-  // Color shots ONLY on opponent grid
-  if (!showShips) {
-    if (cell === CELL_STATES.HIT || cell === CELL_STATES.SUNK) {
-      return base + " btn-success fw-bold text-white"; // green for hit/sunk
-    }
-    if (cell === CELL_STATES.MISS) {
-      return base + " btn-danger fw-bold text-white"; // red for miss
-    }
-  } else {
-    // Your fleet stays neutral for shot markers
+  // 👇 When we are looking at the opponent board (normal play view)
+  // Ships are hidden → look like empty water
+  if (cell === CELL_STATES.EMPTY || cell === CELL_STATES.SHIP) {
     return base + " btn-outline-secondary";
+  }
+
+  // Shots: color hits and misses
+  if (cell === CELL_STATES.HIT || cell === CELL_STATES.SUNK) {
+    return base + " btn-success fw-bold text-white"; // green for hit/sunk
+  }
+  if (cell === CELL_STATES.MISS) {
+    return base + " btn-danger fw-bold text-white"; // red for miss
   }
 
   return base;
@@ -34,9 +48,9 @@ function cellClass(cell, showShips, clickable, disabled) {
 export function Board({
   title,
   board,
-  clickable,
-  disabled,
-  showShips,
+  clickable = false,
+  disabled = false,
+  showShips = false,
   onCellClick,
 }) {
   const effectiveBoard =
@@ -78,11 +92,13 @@ export function Board({
                     aria-label={`cell-${r}-${c}`}
                     title={`${COL_LABELS[c]}${r + 1}`}
                   >
-                    
+                    {/* Opponent view: show ✓ / ✕ for shots */}
                     {!showShips &&
-                      (cell === CELL_STATES.HIT || cell === CELL_STATES.SUNK) &&
+                      (cell === CELL_STATES.HIT ||
+                        cell === CELL_STATES.SUNK) &&
                       "✓"}
                     {!showShips && cell === CELL_STATES.MISS && "✕"}
+                    {/* Own fleet view: no symbols needed, ships are shown by color */}
                   </button>
                 </td>
               ))}
@@ -93,4 +109,5 @@ export function Board({
     </div>
   );
 }
+
 export default Board;

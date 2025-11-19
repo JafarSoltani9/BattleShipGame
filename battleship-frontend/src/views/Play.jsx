@@ -7,17 +7,20 @@ import { useGameCtx } from "../context/GameContext";
 import { GAME_STATES, CELL_STATES } from "../gameConstants";
 
 export default function Play({ view, refresh }) {
-  // 
   const { gameId, setGameId, setViewer } = useGameCtx();
   const [busy, setBusy] = useState(false);
 
   // Both perspectives
-  const [p1View, setP1View] = useState(null); // P1's shots on P2
-  const [p2View, setP2View] = useState(null); // P2's shots on P1
+  const [p1View, setP1View] = useState(null); // P1's view
+  const [p2View, setP2View] = useState(null); // P2's view
 
   // Sunk ships recorded by each shooter
   const [sunkByP1, setSunkByP1] = useState([]); // ships sunk by P1
   const [sunkByP2, setSunkByP2] = useState([]); // ships sunk by P2
+
+  // NEW: toggle showing fleets
+  const [showFleetP1, setShowFleetP1] = useState(false);
+  const [showFleetP2, setShowFleetP2] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -36,7 +39,9 @@ export default function Play({ view, refresh }) {
         // silent
       }
     })();
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, [gameId, view?.state]); // refresh on state change
 
   if (!gameId) return null;
@@ -46,7 +51,8 @@ export default function Play({ view, refresh }) {
   const inTurn = isYourTurnP1 || isYourTurnP2;
 
   function countHitsMisses(boardMasked) {
-    let hits = 0, misses = 0;
+    let hits = 0,
+      misses = 0;
     if (!boardMasked) return { hits, misses };
     for (const row of boardMasked) {
       for (const cell of row) {
@@ -73,8 +79,9 @@ export default function Play({ view, refresh }) {
 
       // record sunk ship by shooter
       if (result?.sunk && result?.sunkShipType) {
-        if (player === "P1") setSunkByP1(prev => [...prev, result.sunkShipType]);
-        else setSunkByP2(prev => [...prev, result.sunkShipType]);
+        if (player === "P1")
+          setSunkByP1((prev) => [...prev, result.sunkShipType]);
+        else setSunkByP2((prev) => [...prev, result.sunkShipType]);
       }
 
       // refresh parent + both perspectives
@@ -92,10 +99,10 @@ export default function Play({ view, refresh }) {
     }
   }
 
-  // Go back to Lobby 
+  // Go back to Lobby
   function goToStart() {
-    setViewer("P1");   
-    setGameId(null);   
+    setViewer("P1");
+    setGameId(null);
   }
 
   return (
@@ -114,10 +121,12 @@ export default function Play({ view, refresh }) {
 
       {inTurn ? (
         <div className="row g-4 justify-content-center">
-          
+          {/* LEFT: P1 shoots at P2 */}
           <div className="col-md-5">
             <Board
-              title={`${p1View?.p2Name || "Opponent"} (for ${p1View?.p1Name || "P1"})`}
+              title={`${p1View?.p2Name || "Opponent"} (for ${
+                p1View?.p1Name || "P1"
+              })`}
               board={p1View?.opponentBoardMasked}
               showShips={false}
               clickable={isYourTurnP1}
@@ -130,12 +139,36 @@ export default function Play({ view, refresh }) {
               hits={p1Stats.hits}
               misses={p1Stats.misses}
             />
+
+            {/* P1 fleet toggle + board */}
+            <div className="text-center mt-2">
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-light"
+                onClick={() => setShowFleetP1((prev) => !prev)}
+              >
+                {showFleetP1 ? "Hide my ships" : "Show my ships"}
+              </button>
+            </div>
+            {showFleetP1 && (
+              <div className="mt-2">
+                <Board
+                  title={`${p1View?.p1Name || "Player 1"} — my fleet`}
+                  board={p1View?.yourBoard}
+                  showShips={true}
+                  clickable={false}
+                  disabled={true}
+                />
+              </div>
+            )}
           </div>
 
-          
+          {/* RIGHT: P2 shoots at P1 */}
           <div className="col-md-5">
             <Board
-              title={`${p2View?.p1Name || "Opponent"} (for ${p2View?.p2Name || "P2"})`}
+              title={`${p2View?.p1Name || "Opponent"} (for ${
+                p2View?.p2Name || "P2"
+              })`}
               board={p2View?.opponentBoardMasked}
               showShips={false}
               clickable={isYourTurnP2}
@@ -148,13 +181,34 @@ export default function Play({ view, refresh }) {
               hits={p2Stats.hits}
               misses={p2Stats.misses}
             />
+
+            {/* P2 fleet toggle + board */}
+            <div className="text-center mt-2">
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-light"
+                onClick={() => setShowFleetP2((prev) => !prev)}
+              >
+                {showFleetP2 ? "Hide my ships" : "Show my ships"}
+              </button>
+            </div>
+            {showFleetP2 && (
+              <div className="mt-2">
+                <Board
+                  title={`${p2View?.p2Name || "Player 2"} — my fleet`}
+                  board={p2View?.yourBoard}
+                  showShips={true}
+                  clickable={false}
+                  disabled={true}
+                />
+              </div>
+            )}
           </div>
         </div>
       ) : (
         <div className="text-center text-muted">Placement phase…</div>
       )}
 
-      
       <div className="text-center my-4">
         <button
           type="button"
