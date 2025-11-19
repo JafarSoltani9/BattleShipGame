@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Board } from "../components/Board";
 import { randomPlacement, placeShip } from "../api";
@@ -16,7 +15,7 @@ const SHIPS = [
 export default function Placement({ view, refresh }) {
   const { gameId, viewer } = useGameCtx();
   const [selectedShip, setSelectedShip] = useState(SHIP_TYPES.CARRIER);
-  const [orientation, setOrientation] = useState("H");
+  const [orientation, setOrientation] = useState("H"); // "H" or "V" in UI
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(null);
 
@@ -42,14 +41,26 @@ export default function Placement({ view, refresh }) {
     setBusy(true);
     setMessage(null);
     try {
+      // map UI value ("H"/"V") to backend enum ("HORIZONTAL"/"VERTICAL")
+      const orientationEnum =
+        orientation === "H" ? "HORIZONTAL" : "VERTICAL";
+
       await placeShip(gameId, {
-        player: viewer,
-        shipType: selectedShip,
-        row,
-        col,
-        orientation,
+        player: viewer, // "P1" or "P2" -> matches Player enum
+        shipType: selectedShip, // e.g. "CRUISER" -> matches ShipType enum
+        row, // 0–9
+        col, // 0–9
+        orientation: orientationEnum, // matches Orientation enum
       });
-      setMessage(`Placed ${selectedShip} at row ${row + 1}, col ${col + 1} (${orientation})`);
+
+      const prettyOrientation =
+        orientationEnum === "HORIZONTAL" ? "Horizontal" : "Vertical";
+
+      setMessage(
+        `Placed ${selectedShip} at row ${row + 1}, col ${
+          col + 1
+        } (${prettyOrientation})`
+      );
       await refresh();
     } catch (err) {
       setMessage(err.message || "Invalid placement");
@@ -92,7 +103,9 @@ export default function Placement({ view, refresh }) {
                     type="button"
                     className={
                       "btn btn-sm " +
-                      (orientation === "H" ? "btn-primary" : "btn-outline-light")
+                      (orientation === "H"
+                        ? "btn-primary"
+                        : "btn-outline-light")
                     }
                     onClick={() => setOrientation("H")}
                   >
@@ -102,7 +115,9 @@ export default function Placement({ view, refresh }) {
                     type="button"
                     className={
                       "btn btn-sm " +
-                      (orientation === "V" ? "btn-primary" : "btn-outline-light")
+                      (orientation === "V"
+                        ? "btn-primary"
+                        : "btn-outline-light")
                     }
                     onClick={() => setOrientation("V")}
                   >

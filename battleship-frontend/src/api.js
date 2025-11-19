@@ -1,4 +1,3 @@
-
 import { VIEWERS } from "./gameConstants";
 
 const API_ROOT = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
@@ -28,14 +27,13 @@ export async function createGame(p1Name, p2Name) {
     method: "POST",
   });
 
-   // expect CreateGameResponse
+  // expect CreateGameResponse
   const data = await handleJson(res);
 
   if (!data) {
     throw new Error("Empty response from createGame");
   }
 
-  
   return data.id ?? data.gameId ?? data.gameID;
 }
 
@@ -47,7 +45,6 @@ export async function getGame(gameId, viewer = VIEWERS.P1) {
   );
   return await handleJson(res);
 }
-
 
 // backend return 200 and return 400 if already placed
 export async function randomPlacement(gameId, player) {
@@ -62,22 +59,20 @@ export async function randomPlacement(gameId, player) {
 
   if (!res.ok) {
     if (res.status === 400) {
-      
       throw new Error("You have already placed all ships for this player.");
     }
     const text = await res.text();
     throw new Error(text || `HTTP ${res.status}`);
   }
-  
 }
 
-// random-place 2 players,
+// random-place 2 players
 export async function quickStart(gameId) {
   await randomPlacement(gameId, "P1");
   await randomPlacement(gameId, "P2");
 }
 
-
+// ✅ FIXED: use API_ROOT and handleJson
 export async function placeShip(
   gameId,
   { player, shipType, row, col, orientation }
@@ -87,14 +82,17 @@ export async function placeShip(
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ player, shipType, row, col, orientation }),
+      body: JSON.stringify({
+        player, // "P1" or "P2"
+        shipType,
+        row,
+        col,
+        orientation, // "HORIZONTAL" or "VERTICAL"
+      }),
     }
   );
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || `HTTP ${res.status}`);
-  }
+  return await handleJson(res); // backend returns 200 with empty body → null
 }
 
 // backend returns FireResponse JSON.
