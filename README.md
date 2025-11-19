@@ -42,7 +42,7 @@ Each player secretly places a fleet of ships on their own 10×10 grid. The goal 
   - Java 
   - Spring Boot
   - Maven
-  - JUnit tests
+  - JUnit
 
 
 **Frontend**

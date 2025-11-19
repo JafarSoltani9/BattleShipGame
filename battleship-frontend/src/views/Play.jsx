@@ -114,7 +114,7 @@ export default function Play({ view, refresh }) {
 
   const p1Title = showFleetP1
     ? `${p1View?.p1Name || "Player 1"} — my fleet`
-    : `${p1View?.p2Name || "Opponent"} (for ${p1View?.p1Name || "P1"})`;
+    : `${p1View?.p1Name || "Opponent"} Scoreboard`;
 
   const p2BoardToShow = showFleetP2
     ? p2View?.yourBoard
@@ -122,7 +122,7 @@ export default function Play({ view, refresh }) {
 
   const p2Title = showFleetP2
     ? `${p2View?.p2Name || "Player 2"} — my fleet`
-    : `${p2View?.p1Name || "Opponent"} (for ${p2View?.p2Name || "P2"})`;
+    : `${p2View?.p2Name || "Opponent"} Scoreboard`;
 
   return (
     <div className="container py-3 text-light">
