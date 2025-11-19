@@ -13,13 +13,15 @@ function Shell() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const state = view?.state;
+  const isPlacement =
+    state === GAME_STATES.PLACING_P1 || state === GAME_STATES.PLACING_P2;
+
   useEffect(() => {
     let alive = true;
 
     (async () => {
-      if (!gameId) {
-        return;
-      }
+      if (!gameId) return;
       setLoading(true);
       setError(null);
       try {
@@ -53,11 +55,10 @@ function Shell() {
 
   function handlePlayAgain() {
     setGameId(null);
-    setView(null); // clearing here is fine (outside effects)
+    setView(null);
   }
 
   let mainContent = null;
-  const state = view?.state;
 
   if (!gameId) {
     mainContent = (
@@ -73,10 +74,7 @@ function Shell() {
         <span>Loading game…</span>
       </div>
     );
-  } else if (
-    state === GAME_STATES.PLACING_P1 ||
-    state === GAME_STATES.PLACING_P2
-  ) {
+  } else if (state === GAME_STATES.PLACING_P1 || state === GAME_STATES.PLACING_P2) {
     mainContent = <Placement view={view} refresh={fetchNow} />;
   } else if (state === GAME_STATES.TURN_P1 || state === GAME_STATES.TURN_P2) {
     mainContent = <Play view={view} refresh={fetchNow} />;
@@ -94,7 +92,8 @@ function Shell() {
             Game ID:&nbsp;<code className="text-danger">{gameId ?? "—"}</code>
           </span>
 
-          {view && (
+          {/* 👇 Only show viewer switch during placement phase */}
+          {view && isPlacement && (
             <div className="d-flex align-items-center gap-3 flex-wrap">
               <span className="small mb-0">
                 Viewing as:&nbsp;

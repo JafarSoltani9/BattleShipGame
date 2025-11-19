@@ -18,7 +18,7 @@ export default function Play({ view, refresh }) {
   const [sunkByP1, setSunkByP1] = useState([]); // ships sunk by P1
   const [sunkByP2, setSunkByP2] = useState([]); // ships sunk by P2
 
-  // NEW: toggle showing fleets
+  // Toggle: show own fleet vs opponent grid
   const [showFleetP1, setShowFleetP1] = useState(false);
   const [showFleetP2, setShowFleetP2] = useState(false);
 
@@ -63,7 +63,7 @@ export default function Play({ view, refresh }) {
     return { hits, misses };
   }
 
-  // compute stats from masked boards
+  // compute stats from masked boards (shots fired)
   const p1Stats = countHitsMisses(p1View?.opponentBoardMasked);
   const p2Stats = countHitsMisses(p2View?.opponentBoardMasked);
 
@@ -79,9 +79,11 @@ export default function Play({ view, refresh }) {
 
       // record sunk ship by shooter
       if (result?.sunk && result?.sunkShipType) {
-        if (player === "P1")
+        if (player === "P1") {
           setSunkByP1((prev) => [...prev, result.sunkShipType]);
-        else setSunkByP2((prev) => [...prev, result.sunkShipType]);
+        } else {
+          setSunkByP2((prev) => [...prev, result.sunkShipType]);
+        }
       }
 
       // refresh parent + both perspectives
@@ -105,6 +107,23 @@ export default function Play({ view, refresh }) {
     setGameId(null);
   }
 
+  // Decide which board & title to show for each player slot
+  const p1BoardToShow = showFleetP1
+    ? p1View?.yourBoard
+    : p1View?.opponentBoardMasked;
+
+  const p1Title = showFleetP1
+    ? `${p1View?.p1Name || "Player 1"} — my fleet`
+    : `${p1View?.p2Name || "Opponent"} (for ${p1View?.p1Name || "P1"})`;
+
+  const p2BoardToShow = showFleetP2
+    ? p2View?.yourBoard
+    : p2View?.opponentBoardMasked;
+
+  const p2Title = showFleetP2
+    ? `${p2View?.p2Name || "Player 2"} — my fleet`
+    : `${p2View?.p1Name || "Opponent"} (for ${p2View?.p2Name || "P2"})`;
+
   return (
     <div className="container py-3 text-light">
       <div className="text-center mb-3">
@@ -121,16 +140,14 @@ export default function Play({ view, refresh }) {
 
       {inTurn ? (
         <div className="row g-4 justify-content-center">
-          {/* LEFT: P1 shoots at P2 */}
+          {/* LEFT SLOT: P1 side */}
           <div className="col-md-5">
             <Board
-              title={`${p1View?.p2Name || "Opponent"} (for ${
-                p1View?.p1Name || "P1"
-              })`}
-              board={p1View?.opponentBoardMasked}
-              showShips={false}
-              clickable={isYourTurnP1}
-              disabled={!isYourTurnP1 || busy}
+              title={p1Title}
+              board={p1BoardToShow}
+              showShips={showFleetP1}
+              clickable={!showFleetP1 && isYourTurnP1} // can only click when viewing opponent
+              disabled={!isYourTurnP1 || busy || showFleetP1}
               onCellClick={(r, c) => handleFireFor("P1", r, c)}
             />
             <Scoreboard
@@ -139,40 +156,25 @@ export default function Play({ view, refresh }) {
               hits={p1Stats.hits}
               misses={p1Stats.misses}
             />
-
-            {/* P1 fleet toggle + board */}
             <div className="text-center mt-2">
               <button
                 type="button"
                 className="btn btn-sm btn-outline-light"
                 onClick={() => setShowFleetP1((prev) => !prev)}
               >
-                {showFleetP1 ? "Hide my ships" : "Show my ships"}
+                {showFleetP1 ? "Show opponent grid" : "Show my ships"}
               </button>
             </div>
-            {showFleetP1 && (
-              <div className="mt-2">
-                <Board
-                  title={`${p1View?.p1Name || "Player 1"} — my fleet`}
-                  board={p1View?.yourBoard}
-                  showShips={true}
-                  clickable={false}
-                  disabled={true}
-                />
-              </div>
-            )}
           </div>
 
-          {/* RIGHT: P2 shoots at P1 */}
+          {/* RIGHT SLOT: P2 side */}
           <div className="col-md-5">
             <Board
-              title={`${p2View?.p1Name || "Opponent"} (for ${
-                p2View?.p2Name || "P2"
-              })`}
-              board={p2View?.opponentBoardMasked}
-              showShips={false}
-              clickable={isYourTurnP2}
-              disabled={!isYourTurnP2 || busy}
+              title={p2Title}
+              board={p2BoardToShow}
+              showShips={showFleetP2}
+              clickable={!showFleetP2 && isYourTurnP2}
+              disabled={!isYourTurnP2 || busy || showFleetP2}
               onCellClick={(r, c) => handleFireFor("P2", r, c)}
             />
             <Scoreboard
@@ -181,28 +183,15 @@ export default function Play({ view, refresh }) {
               hits={p2Stats.hits}
               misses={p2Stats.misses}
             />
-
-            {/* P2 fleet toggle + board */}
             <div className="text-center mt-2">
               <button
                 type="button"
                 className="btn btn-sm btn-outline-light"
                 onClick={() => setShowFleetP2((prev) => !prev)}
               >
-                {showFleetP2 ? "Hide my ships" : "Show my ships"}
+                {showFleetP2 ? "Show opponent grid" : "Show my ships"}
               </button>
             </div>
-            {showFleetP2 && (
-              <div className="mt-2">
-                <Board
-                  title={`${p2View?.p2Name || "Player 2"} — my fleet`}
-                  board={p2View?.yourBoard}
-                  showShips={true}
-                  clickable={false}
-                  disabled={true}
-                />
-              </div>
-            )}
           </div>
         </div>
       ) : (
